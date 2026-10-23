@@ -33,6 +33,8 @@ services:
     environment:
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
       TRANSLATE_MODEL: ${TRANSLATE_MODEL}
+      X_API_KEY: ${X_API_KEY}
+      X_QUERY: ${X_QUERY}
       DB_PATH: /data/cache.db
       MAX_NEW_PER_RUN: 3
       REFRESH_SECONDS: 1800
