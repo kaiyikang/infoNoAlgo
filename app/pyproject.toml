@@ -1,0 +1,13 @@
+[project]
+name = "x-rss-app"
+version = "0.1.0"
+description = "Feed proxy: fetch, translate and reformat RSS feeds"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "feedparser",
+    "httpx",
+    "beautifulsoup4",
+    "feedgen",
+]

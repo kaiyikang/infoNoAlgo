@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: miniflux
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: miniflux
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "miniflux"]
+      interval: 10s
+      retries: 5
+    restart: unless-stopped
+
+  miniflux:
+    image: miniflux/miniflux:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://miniflux:${DB_PASSWORD}@db/miniflux?sslmode=disable
+      RUN_MIGRATIONS: 1
+      CREATE_ADMIN: 1
+      ADMIN_USERNAME: ${ADMIN_USER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    ports:
+      - "127.0.0.1:${MINIFLUX_PORT:-8080}:8080" # set MINIFLUX_PORT in .env if 8080 is taken; expose via tailscale serve
+    restart: unless-stopped
+
+  app:
+    build: ./app
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      TRANSLATE_MODEL: ${TRANSLATE_MODEL}
+      DB_PATH: /data/cache.db
+      MAX_NEW_PER_RUN: 3
+      REFRESH_SECONDS: 1800
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    # no published ports: Miniflux reaches it at http://app:8090/pg.xml
+
+volumes:
+  db:
