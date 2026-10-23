@@ -62,7 +62,7 @@ infoNoAlgo/
     ├── main.py          # 后台循环、挂载各来源路由、/health
     ├── common.py        # conn()、translate()，各来源共用
     ├── sources/
-    │   ├── blog.py      # 博客 RSS：FEEDS 表（pg, newport），/blog/{slug}.xml，/pg.xml 为别名
+    │   ├── blog.py      # 博客 RSS：FEEDS 表（pg, newport, koe），/blog/{slug}.xml，/pg.xml 为别名
     │   └── x.py         # X via twitterapi.io，/x.xml，X_QUERY 为空时不运行
     └── Dockerfile       # uv sync --frozen，只 COPY 需要的文件
 ```
@@ -73,6 +73,7 @@ infoNoAlgo/
 |---|---|---|
 | `/blog/pg.xml`（别名 `/pg.xml`） | Paul Graham，社区 feed `https://paulgrahamessays.val.run/`（第三方维护，可能失效；备选直接抓 `https://paulgraham.com/articles.html`） | `page`：feed 只有摘要，抓原网页 |
 | `/blog/newport.xml` | Cal Newport，`https://calnewport.com/feed/` | `feed`：RSS 自带全文，去掉 WordPress 的 "The post … appeared first on …" 尾注 |
+| `/blog/koe.xml` | Dan Koe，Substack「future/proof」`https://letters.thedankoe.com/feed`（`thedankoe.com/feed/`、`/letters/feed/` 已分别于 2024-07、2025-08 停更，不用） | `feed`：RSS 自带全文，无需过滤 |
 | `/x.xml` | X，twitterapi.io `advanced_search`，查询 `(X_QUERY) since_time:<最新已存推文时间>` | 只翻译 `lang == "en"` 的推文，原文在上、译文在下；作者放 `dc:creator` |
 
 - 博客标题格式"English | 中文"，正文每段原文后接译文。
@@ -113,7 +114,7 @@ infoNoAlgo/
 
 1. ~~`uv lock`~~ 已完成。
 2. ~~本地跑通~~ 已完成。命令（在 `app/` 下）：`DB_PATH=./cache.db TRANSLATE_MODEL=qwen/qwen3.7-flash MAX_NEW_PER_RUN=1 uv run uvicorn main:app --port 8090`（`OPENROUTER_API_KEY` 从 shell 环境读取）。
-3. Pi 上先 `ss -ltn | grep 8080`、`uname -m`，再 `docker compose up -d --build`，Miniflux 订阅 `http://app:8090/blog/pg.xml`、`/blog/newport.xml`、`/x.xml`。
+3. Pi 上先 `ss -ltn | grep 8080`、`uname -m`，再 `docker compose up -d --build`，Miniflux 订阅 `http://app:8090/blog/pg.xml`、`/blog/newport.xml`、`/blog/koe.xml`、`/x.xml`。
 4. Reeder 连 Miniflux，确认能读到译文。
 5. ~~X 来源 proxy~~ 基础版已写。待做：填 `X_API_KEY`、`X_QUERY`，先一个账号联调；之后接私密 List（约 10 个必看账号）。
 6. 实现 ranker：读加星条目，embedding 打分，写回 Miniflux。

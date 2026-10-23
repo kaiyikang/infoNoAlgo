@@ -22,6 +22,7 @@ FEEDS = {
     # "feed": the RSS item carries the full HTML; "page": only a summary, fetch the page
     "pg": ("https://paulgrahamessays.val.run/", "Paul Graham", "page"),
     "newport": ("https://calnewport.com/feed/", "Cal Newport", "feed"),
+    "koe": ("https://letters.thedankoe.com/feed", "Dan Koe", "feed"),  # Substack; thedankoe.com feeds stopped 2024/2025
 }
 
 
